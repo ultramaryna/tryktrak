@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block title %}Start{% endblock %}
+{% block content %}
+    Typ gry: {{ typ_gry }}<br>
+    Wyrzucone wartości:
+    {%  for x in rzuty %}
+        {{ x }}
+    {%  endfor %}
+{% endblock %}

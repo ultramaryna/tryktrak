@@ -1,8 +1,10 @@
 {% extends "base.html" %}
 {% block title %}Start{% endblock %}
 {% block content %}
-    <h2>Wybierz typ gry:</h2>
-    <p>
-      Witaj na mojej stronie
-    </p>
+    <h2>Rozpocznij grę!</h2>
+    <form action = "/gra" method = "get">
+        <input type = "radio" name = "typ_gry" value = "gracze">Gra dla dwóch graczy
+        <input type = "radio" name = "typ_gry" value = "komputer">Gra z komputerem<br>
+        <input type = "submit" value = "Zatwierdź">
+    </form>
 {% endblock %}

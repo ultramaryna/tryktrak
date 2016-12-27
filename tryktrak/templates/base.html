@@ -2,15 +2,17 @@
 <head>
     <title>{% block title %}{% endblock %} - Tryktrak</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz&amp;subset=latin-ext" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto&amp;subset=latin-ext" rel="stylesheet">
 </head>
 <body>
 	<header>
 		<h1>Tryktrak</h1>
 	</header>
-    <div id="content">
+    <main>
 	{% block content %}
 	{% endblock %}
-	</div>
+	<main>
 
 </body>
 </html>

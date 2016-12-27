@@ -12,6 +12,9 @@ var
 sdist
 develop-eggs
 .installed.cfg
+.idea/
+flask/
+tryktrak/__pycache__/
 
 # Installer logs
 pip-log.txt
