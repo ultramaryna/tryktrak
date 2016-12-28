@@ -93,3 +93,13 @@ main {
 	width:34px;
 	background-image: url('pionek_bialy.png');
 }
+
+#kostki img {
+	width:20%;
+	height:auto;
+}
+
+#kostki {
+	position:relative;
+	left:28%;
+}

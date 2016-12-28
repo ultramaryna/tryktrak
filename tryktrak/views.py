@@ -4,13 +4,21 @@ from tryktrak import app
 import random
 
 def rzut_kostka():
-    rzuty = []
-    rzuty.append(random.randint(1,6))
-    rzuty.append(random.randint(1,6))
-    if rzuty[0] == rzuty[1]:
-        rzuty.append(rzuty[0])
-        rzuty.append(rzuty[0])
-    return rzuty
+    ruchy = []
+    ruchy.append(random.randint(1,6))
+    ruchy.append(random.randint(1,6))
+    if ruchy[0] == ruchy[1]:
+        ruchy.append(ruchy[0])
+        ruchy.append(ruchy[0])
+    return ruchy
+
+def sciezki_kostek(ruchy):
+    kostki = []
+    pierwsza_kostka = '../static/' + str(ruchy[0]) + '.png'
+    druga_kostka = '../static/' + str(ruchy[1]) + '.png'
+    kostki.append(pierwsza_kostka)
+    kostki.append(druga_kostka)
+    return kostki
 
 class Plansza:
     def __init__(self):
@@ -36,4 +44,4 @@ def index():
 @app.route('/gra')
 def gra():
     plansza = Plansza()
-    return render_template('gra.html', typ_gry=request.values['typ_gry'], rzuty = rzut_kostka(), stan_gry = plansza.stan)
+    return render_template('gra.html', ruchy = rzut_kostka(), typ_gry=request.values['typ_gry'],  stan_gry = plansza.stan)

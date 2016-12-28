@@ -2,8 +2,16 @@
 {% block title %}Gra{% endblock %}
 {%  block lewy %}
     Typ gry: {{ typ_gry }}<br>
-    Wyrzucone wartości:
-    {%  for x in rzuty %}
+    Rzuty kostką:<br>
+    <div id = "kostki">
+        {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
+        {% set pierwszy_rzut = sciezki[ruchy[0]-1] %}
+        <img src = "{{ pierwszy_rzut }}">
+        {% set drugi_rzut = sciezki[ruchy[1]-1] %}
+        <img src = "{{ drugi_rzut }}">
+    </div>
+    Pozostałe ruchy:
+    {%  for x in ruchy %}
         {{ x }}
     {%  endfor %}
 {% endblock %}
