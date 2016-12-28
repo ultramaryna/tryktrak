@@ -4,6 +4,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <link href="https://fonts.googleapis.com/css?family=Yanone+Kaffeesatz&amp;subset=latin-ext" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto&amp;subset=latin-ext" rel="stylesheet">
+    <script type = text/javascript src = "https://code.jquery.com/jquery-3.1.1.min.js"></script>
 </head>
 <body>
     <div id = "lewy-bok">
@@ -17,6 +18,6 @@
 	{% block content %}
 	{% endblock %}
 	<main>
-
+{% block script %}{% endblock %}
 </body>
 </html>

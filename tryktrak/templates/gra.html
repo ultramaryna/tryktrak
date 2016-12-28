@@ -9,22 +9,30 @@
 {% endblock %}
 {% block content %}
     <div id = "plansza">
-        {% set licznik = 0 %}
-        {% for pole, wartosc in stan_gry.items() %}
-            {% if licznik >= 12 %}
-                <div id = {{ pole }} class = "dolne_pole">
-            {% else %}
-                <div id = {{ pole }} class = "gorne_pole">
-            {% endif %}
-            {% set licznik = licznik+1 %}
-            {% for pionek in wartosc %}
-                {% if pionek == 'bordo' %}
-                    <img href = {{ url_for('static', filename='pionek_bordowy.png') }}>
-                {% elif pionek == 'bialy' %}
-                    <img href = {{ url_for('static', filename='pionek_bialy.png') }}>
+            {% set licznik = 0 %}
+            {% for pole, wartosc in stan_gry.items() %}
+                {% if licznik < 12 %}
+                    <div id = {{ pole }} class = "pole dolne_pole">
+                {% else %}
+                    <div id = {{ pole }} class = "pole gorne_pole">
                 {% endif %}
+                {% set licznik = licznik+1 %}
+                {% for pionek in wartosc %}
+                    {% if pionek == 'bordo' %}
+                        <div class = "pionek_bordo"></div>
+                    {% elif pionek == 'bialy' %}
+                        <div class = "pionek_bialy"></div>
+                    {% endif %}
+                {% endfor %}
+                    </div>
             {% endfor %}
-            </div>
-        {% endfor %}
     </div>
+{% endblock %}
+{% block script %}
+    <script>
+    $(document).ready(function(){
+        $('#pole_18').after('<div id="belka_gora" class = "gorne_pole pole" style="width:28px;"></div>');
+        $('#pole_6').after('<div id="belka_dol" class = "dolne_pole pole" style="width:28px;"></div>');
+    });
+    </script>
 {% endblock %}

@@ -41,21 +41,55 @@ main {
 	background-image: url('plansza.png');
 }
 
-#plansza div {
-	width: 45px;
+
+#plansza .pole {
+	width: 34px;
+	margin:0 5px 0 5px;
 	height: 255px;
-	float:left;
 	position:relative;
-	left:13px;
 }
 
 .gorne_pole {
+	float:left;
 	position:relative;
-	top:14px;
+	bottom:242px;
+	left:16.5px;
+}
+
+.dolne_pole {
+	float:right;
+	position: relative;
+	top:266px;
+	right:16.5px;
+	transform:rotate(180deg);
+}
+
+#belka_gora {
+	width:38px;
+	height:255px;
+	float:left;
+}
+
+#belka_dol {
+	width:38px;
+	height:255px;
+	float:right;
 }
 
 #plansza div img {
-	width:35px;
-	height:35px;
+	width:34px;
+	height:34px;
 	z-index:100;
+}
+
+.pionek_bordo {
+	height:34px;
+	width:34px;
+	background-image: url('pionek_bordowy.png');
+}
+
+.pionek_bialy {
+	height:34px;
+	width:34px;
+	background-image: url('pionek_bialy.png');
 }
