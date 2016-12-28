@@ -12,6 +12,14 @@ header {
 	padding:10px 0 10px 0;
 }
 
+#lewy-bok {
+	width:20%;
+	background-color: #3E000C;
+	height:100%;
+	float:left;
+	color: white;
+}
+
 h1 {
 	font-weight: normal;
 	font-family: 'Yanone Kaffeesatz', sans-serif;
@@ -21,8 +29,33 @@ h1 {
 }
 
 main {
-	width:80%;
 	position:relative;
-	left:10%;
+	left:20%;
 	margin: 50px 0 0 0;
+	float:left;
+}
+
+#plansza {
+	width: 600px;
+	height: 537px;
+	background-image: url('plansza.png');
+}
+
+#plansza div {
+	width: 45px;
+	height: 255px;
+	float:left;
+	position:relative;
+	left:13px;
+}
+
+.gorne_pole {
+	position:relative;
+	top:14px;
+}
+
+#plansza div img {
+	width:35px;
+	height:35px;
+	z-index:100;
 }
