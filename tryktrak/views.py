@@ -1,7 +1,7 @@
 from flask import render_template, request
 from collections import OrderedDict
 from tryktrak import app
-import random
+import pickle, random
 
 def rzut_kostka():
     ruchy = []
@@ -12,16 +12,9 @@ def rzut_kostka():
         ruchy.append(ruchy[0])
     return ruchy
 
-def sciezki_kostek(ruchy):
-    kostki = []
-    pierwsza_kostka = '../static/' + str(ruchy[0]) + '.png'
-    druga_kostka = '../static/' + str(ruchy[1]) + '.png'
-    kostki.append(pierwsza_kostka)
-    kostki.append(druga_kostka)
-    return kostki
-
 class Plansza:
-    def __init__(self):
+    def __init__(self, typ_gry):
+        self.typ_gry = typ_gry
         self.stan = OrderedDict()
         for x in range(24):
             numer = x+1
@@ -43,5 +36,28 @@ def index():
 
 @app.route('/gra')
 def gra():
-    plansza = Plansza()
-    return render_template('gra.html', ruchy = rzut_kostka(), typ_gry=request.values['typ_gry'],  stan_gry = plansza.stan)
+    plansza = Plansza(request.values['typ_gry'])
+
+    with open('zapis.pickle', 'wb') as handle:
+        pickle.dump(plansza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return render_template('gra.html', ruchy = rzut_kostka(), typ_gry=plansza.typ_gry,  stan_gry = plansza.stan)
+
+
+@app.route('/ruch')
+def ruch():
+    with open('zapis.pickle', 'rb') as handle:
+        plansza = pickle.load(handle)
+
+    skad = 'pole_'+str(request.values['pionek'])
+    dokad = 'pole_'+str(request.values['pole'])
+    if 'bordo' in plansza.stan[skad]:
+        plansza.stan[dokad].append('bordo')
+    elif 'bialy' in plansza.stan[skad]:
+        plansza.stan[dokad].append('bialy')
+    plansza.stan[skad].pop()
+
+    with open('zapis.pickle', 'wb') as handle:
+        pickle.dump(plansza, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return render_template('ruch.html', ruchy = rzut_kostka(), typ_gry=plansza.typ_gry, stan_gry=plansza.stan)
