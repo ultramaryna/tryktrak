@@ -2,16 +2,17 @@
 {% block title %}Gra{% endblock %}
 {%  block lewy %}
     Typ gry: {{ typ_gry }}<br>
+    Aktywny gracz: {{ kolejka }}<br>
     Rzuty kostką:<br>
     <div id = "kostki">
         {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
-        {% set pierwszy_rzut = sciezki[ruchy[0]-1] %}
+        {% set pierwszy_rzut = sciezki[rzuty[0]-1] %}
         <img src = "{{ pierwszy_rzut }}">
-        {% set drugi_rzut = sciezki[ruchy[1]-1] %}
+        {% set drugi_rzut = sciezki[rzuty[1]-1] %}
         <img src = "{{ drugi_rzut }}">
     </div>
     Pozostałe ruchy:
-    {%  for x in ruchy %}
+    {%  for x in aktywne_rzuty %}
         {{ x }}
     {%  endfor %}<br>
     Wybierz kolejny ruch:

@@ -2,13 +2,16 @@
 {% block title %}Gra{% endblock %}
 {%  block lewy %}
     Typ gry: {{ typ_gry }}<br>
+    Aktywny gracz: {{ kolejka }}<br>
+
     Rzuty kostką:<br>
     <div id = "kostki">
+        Rzuty do wykorzystania:<br>
         {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
-        {% set pierwszy_rzut = sciezki[ruchy[0]-1] %}
-        <img src = "{{ pierwszy_rzut }}">
-        {% set drugi_rzut = sciezki[ruchy[1]-1] %}
-        <img src = "{{ drugi_rzut }}">
+        {% for rzut in rzuty %}
+            {% set sciezka = sciezki[rzut-1] %}
+            <img src = "{{ sciezka }}">
+        {% endfor %}
     </div>
     Pozostałe ruchy:
     {%  for x in ruchy %}
@@ -19,7 +22,8 @@
         <input type = "text" name = "pionek">
         <input type = "text" name = "pole">
         <input type = "submit" value = "Zatwierdź">
-    </form>
+    </form><br>
+        {{ komunikat }}
 {% endblock %}
 {% block content %}
     <div id = "plansza">
