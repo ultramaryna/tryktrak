@@ -1,4 +1,4 @@
-from flask import render_template, request
+from flask import render_template, request, redirect, url_for
 from collections import OrderedDict
 from tryktrak import app
 import pickle, random
@@ -6,14 +6,13 @@ import pickle, random
 class Gra:
     def __init__(self, typ_gry):
         self.typ_gry = typ_gry
+        self.gracz1 = ''
         if typ_gry == 'komputer':
-            self.gracz1 = 'bordo'
-            self.komputer = 'bialy'
+            self.gracz2 = 'Komputer'
         else:
-            self.gracz1 = 'bordo'
-            self.gracz2 = 'bialy'
-        self.kolejka = 'gracz1'
-        if self.kolejka == 'gracz1':
+            self.gracz2 = ''
+        self.kolejka = self.gracz1
+        if self.kolejka == self.gracz1:
             self.aktywny_kolor = 'bordo'
         else:
             self.aktywny_kolor = 'bialy'
@@ -44,15 +43,15 @@ class Gra:
 
     def koniec_kolejki(self):
         if self.typ_gry == 'komputer':
-            if self.kolejka == 'gracz1':
-                self.kolejka = 'komputer'
+            if self.kolejka == self.gracz1:
+                self.kolejka = self.gracz2
             else:
-                self.kolejka = 'gracz1'
+                self.kolejka = self.gracz1
         else:
-            if self.kolejka == 'gracz1':
-                self.kolejka = 'gracz2'
+            if self.kolejka == self.gracz1:
+                self.kolejka = self.gracz2
             else:
-                self.kolejka = 'gracz1'
+                self.kolejka = self.gracz1
         if self.aktywny_kolor == 'bordo':
             self.aktywny_kolor = 'bialy'
         else:
@@ -80,6 +79,11 @@ class Gra:
         if self.aktywny_kolor == 'bordo':
             wartosc_ruchu = int(dokad)-int(skad)
             if wartosc_ruchu in mozliwe_ruchy:
+                if 'bialy' in self.plansza[dokad_pole]:
+                    if len(self.plansza[dokad_pole]) == 1:
+                        self.zbij_pionek(dokad_pole)
+                    else:
+                        return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
                 if 'bordo' in self.plansza[skad_pole]:
                     self.plansza[dokad_pole].append('bordo')
                     self.plansza[skad_pole].pop()
@@ -93,6 +97,11 @@ class Gra:
             if self.aktywny_kolor == 'bialy':
                 wartosc_ruchu = int(skad)-int(dokad)
                 if wartosc_ruchu in mozliwe_ruchy:
+                    if 'bordo' in self.plansza[dokad_pole]:
+                        if len(self.plansza[dokad_pole]) == 1:
+                            self.zbij_pionek(dokad_pole)
+                        else:
+                            return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
                     if 'bialy' in self.plansza[skad_pole]:
                         self.plansza[dokad_pole].append('bialy')
                         self.plansza[skad_pole].pop()
@@ -102,6 +111,7 @@ class Gra:
                         return 'Na wybranym polu nie ma żadnego pionka!'
                 else:
                     return 'Nie możesz przesunąć pionka o taką liczbę oczek'
+
         if wartosc_ruchu in self.aktywne_rzuty:
             self.aktywne_rzuty.remove(wartosc_ruchu)
         else:
@@ -114,16 +124,37 @@ class Gra:
             self.koniec_kolejki()
         self.znajdz_mozliwe_ruchy()
 
+    def zbij_pionek(self, pole):
+        pionek = self.plansza[pole]
+        self.plansza[pole].pop()
+        self.zbite = []
+        self.zbite.append(pionek)
+
+
 
 
 @app.route('/')
+@app.route('/index')
 def index():
     return render_template('index.html')
 
+@app.route('/wybierzgraczy')
+def wybierzgraczy():
+    gra = Gra(request.values['typ_gry'])
+
+    with open('zapis.pickle', 'wb') as handle:
+        pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
+    return render_template('wybierzgraczy.html', typ_gry = gra.typ_gry)
 
 @app.route('/gra')
 def gra():
-    gra = Gra(request.values['typ_gry'])
+    with open('zapis.pickle', 'rb') as handle:
+        gra = pickle.load(handle)
+
+    gra.gracz1 = request.values['gracz1']
+    gra.kolejka = gra.gracz1
+    if gra.typ_gry == 'gracze':
+        gra.gracz2 = request.values['gracz2']
     gra.rzut_kostka()
     rzuty = gra.rzuty
     with open('zapis.pickle', 'wb') as handle:
@@ -146,5 +177,5 @@ def ruch():
     with open('zapis.pickle', 'wb') as handle:
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_mozliwe_ruchy(), typ_gry=gra.typ_gry, stan_gry=gra.plansza,
-                           komunikat=komunikat, kolejka=gra.kolejka)
+    return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_mozliwe_ruchy(),
+                           typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikat=komunikat, kolejka=gra.kolejka)

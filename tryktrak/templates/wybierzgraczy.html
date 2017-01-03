@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Wybierz graczy{% endblock %}
+{%  block lewy %}
+{% endblock %}
+{% block content %}
+    <h2>Wpisz imiona graczy:</h2>
+    {% if typ_gry == 'gracze' %}
+        <form action = "/gra" method="get">
+            Pierwszy gracz: <input type = "text" name = "gracz1"><br>
+            Drugi gracz: <input type = "text" name = "gracz2"><br>
+            <input type = "submit" value = "Zapisz">
+        </form>
+    {% else %}
+        <form action = "/gra" method="get">
+            Gracz: <input type = "text" name = "gracz1"><br>
+            <input type = "submit" value = "Zapisz">
+        </form>
+    {% endif %}
+{% endblock %}
