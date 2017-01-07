@@ -11,8 +11,8 @@
         {% set drugi_rzut = sciezki[rzuty[1]-1] %}
         <img src = "{{ drugi_rzut }}">
     </div>
-    Pozostałe ruchy:
-    {%  for x in aktywne_rzuty %}
+    Ruchy możliwe do wykonania:
+    {%  for x in ruchy %}
         {{ x }}
     {%  endfor %}<br>
     Wybierz kolejny ruch:
@@ -28,8 +28,10 @@
             {% for pole, wartosc in stan_gry.items() %}
                 {% if licznik < 12 %}
                     <div id = {{ pole }} class = "pole dolne_pole">
+                    <p>{{ loop.index }}</p>
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
+                    <p>{{ loop.index }}</p>
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}

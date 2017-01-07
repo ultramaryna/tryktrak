@@ -16,6 +16,7 @@ class Gra:
             self.aktywny_kolor = 'bordo'
         else:
             self.aktywny_kolor = 'bialy'
+        self.zbite = []
         self.plansza = OrderedDict()
         for x in range(24):
             numer = x+1
@@ -31,6 +32,7 @@ class Gra:
         self.plansza['pole_24'] = ['bialy', 'bialy']
 
     def rzut_kostka(self):
+        """Wykonuje rzut dwoma kostkami kostkami"""
         rzuty = []
         rzuty.append(random.randint(1, 6))
         rzuty.append(random.randint(1, 6))
@@ -42,6 +44,7 @@ class Gra:
         return self.rzuty, self.aktywne_rzuty
 
     def koniec_kolejki(self):
+        """Zmienia aktywnego gracza i aktywny kolor pod koniec kolejki"""
         if self.typ_gry == 'komputer':
             if self.kolejka == self.gracz1:
                 self.kolejka = self.gracz2
@@ -59,6 +62,7 @@ class Gra:
         self.rzut_kostka()
 
     def znajdz_mozliwe_ruchy(self):
+        """Na podstawie wyrzuconych kostek zwraca wartości ruchu możliwe do wykonania"""
         mozliwe_ruchy = []
         if len(self.aktywne_rzuty) == 1:
             mozliwe_ruchy.append(self.aktywne_rzuty[0])
@@ -70,9 +74,11 @@ class Gra:
             licznik = 1
             for x in self.aktywne_rzuty:
                 mozliwe_ruchy.append(x * licznik)
+                licznik += 1
         return mozliwe_ruchy
 
     def ruch(self, skad, dokad):
+        """Wykonuje ruch na podstawie przekazanych wartości pól"""
         skad_pole = 'pole_' + str(request.values['pionek'])
         dokad_pole = 'pole_' + str(request.values['pole'])
         mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
@@ -118,16 +124,16 @@ class Gra:
             if len(self.aktywne_rzuty) == 2:
                 self.aktywne_rzuty = []
             else:
-                x = wartosc_ruchu/self.aktywne_rzuty[0]
+                x = int(wartosc_ruchu/self.aktywne_rzuty[0])
                 del self.aktywne_rzuty[-x:]
         if len(self.aktywne_rzuty) == 0:
             self.koniec_kolejki()
         self.znajdz_mozliwe_ruchy()
 
     def zbij_pionek(self, pole):
+        """Zbija pionek z pola przekazanego w zmiennej"""
         pionek = self.plansza[pole]
         self.plansza[pole].pop()
-        self.zbite = []
         self.zbite.append(pionek)
 
 
@@ -173,9 +179,10 @@ def ruch():
     dokad = request.values['pole']
     komunikat = gra.ruch(skad, dokad)
     rzuty = gra.rzuty
+    zbite = gra.zbite
 
     with open('zapis.pickle', 'wb') as handle:
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
     return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_mozliwe_ruchy(),
-                           typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikat=komunikat, kolejka=gra.kolejka)
+                           typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikat=komunikat, kolejka=gra.kolejka, zbite=zbite)

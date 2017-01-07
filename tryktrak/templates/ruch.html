@@ -9,11 +9,13 @@
         Rzuty do wykorzystania:<br>
         {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
         {% for rzut in rzuty %}
-            {% set sciezka = sciezki[rzut-1] %}
-            <img src = "{{ sciezka }}">
+            {% if loop.index < 3 %}
+                {% set sciezka = sciezki[rzut-1] %}
+                <img src = "{{ sciezka }}">
+            {% endif %}
         {% endfor %}
     </div>
-    Pozostałe ruchy:
+    Ruchy możliwe do wykonania:
     {%  for x in ruchy %}
         {{ x }}
     {%  endfor %}<br>
@@ -31,8 +33,10 @@
             {% for pole, wartosc in stan_gry.items() %}
                 {% if licznik < 12 %}
                     <div id = {{ pole }} class = "pole dolne_pole">
+                    <p>{{ loop.index }}</p>
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
+                    <p>{{ loop.index }}</p>
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}
@@ -44,6 +48,15 @@
                 {% endfor %}
                     </div>
             {% endfor %}
+            <div id = "zbite" style="left:285px;">
+                {% for pionek in zbite %}
+                    {% if 'bordo' in pionek %}
+                        <div class = "pionek_bordo"></div>
+                    {% elif 'bialy' in pionek %}
+                        <div class = "pionek_bialy"></div>
+                    {% endif %}
+                {% endfor %}
+            </div>
     </div>
 {% endblock %}
 {% block script %}
