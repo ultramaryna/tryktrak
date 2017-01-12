@@ -16,12 +16,12 @@ class Gra:
             self.aktywny_kolor = 'bordo'
         else:
             self.aktywny_kolor = 'bialy'
-        self.zbite = []
         self.plansza = OrderedDict()
         for x in range(24):
             numer = x+1
             klucz = 'pole_'+str(numer)
             self.plansza[klucz] = []
+        self.plansza['zbite'] = []
         self.plansza['pole_1'] = ['bordo', 'bordo']
         self.plansza['pole_6'] = ['bialy', 'bialy', 'bialy', 'bialy', 'bialy']
         self.plansza['pole_8'] = ['bialy', 'bialy', 'bialy']
@@ -79,20 +79,42 @@ class Gra:
 
     def ruch(self, skad, dokad):
         """Wykonuje ruch na podstawie przekazanych wartości pól"""
-        skad_pole = 'pole_' + str(request.values['pionek'])
-        dokad_pole = 'pole_' + str(request.values['pole'])
+
+        if int(skad) == 0:
+            skad_pole = 'zbite'
+        else:
+            skad_pole = 'pole_' + str(skad)
+        dokad_pole = 'pole_' + str(dokad)
         mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
+
         if self.aktywny_kolor == 'bordo':
-            wartosc_ruchu = int(dokad)-int(skad)
-            if wartosc_ruchu in mozliwe_ruchy:
-                if 'bialy' in self.plansza[dokad_pole]:
-                    if len(self.plansza[dokad_pole]) == 1:
-                        self.zbij_pionek(dokad_pole)
+            wartosc_ruchu = int(dokad) - int(skad)
+            if 'bordo' in self.plansza['zbite']:
+                if int(skad) != 0:
+                    return "Najpierw musisz ściągnąć zbite pionki"
+                else:
+                    if int(dokad) in mozliwe_ruchy:
+                        if 'bialy' in self.plansza[dokad_pole]:
+                            if len(self.plansza[dokad_pole]) == 1:
+                                self.zbij_pionek(dokad_pole)
+                            else:
+                                return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                        self.plansza[dokad_pole].append('bordo')
+                        self.plansza['zbite'].remove('bordo')
+                        self.usun_wykorzystany_ruch(wartosc_ruchu)
+                        return
                     else:
                         return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+            if wartosc_ruchu in mozliwe_ruchy:
                 if 'bordo' in self.plansza[skad_pole]:
+                    if 'bialy' in self.plansza[dokad_pole]:
+                        if len(self.plansza[dokad_pole]) == 1:
+                            self.zbij_pionek(dokad_pole)
+                        else:
+                            return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
                     self.plansza[dokad_pole].append('bordo')
                     self.plansza[skad_pole].pop()
+                    self.usun_wykorzystany_ruch(wartosc_ruchu)
                 elif 'bialy' in self.plansza[skad_pole]:
                     return 'To nie twój kolor pionków!'
                 else:
@@ -101,16 +123,34 @@ class Gra:
                 return 'Nie możesz przesunąć pionka o taką liczbę oczek'
         else:
             if self.aktywny_kolor == 'bialy':
+                if 'bialy' in self.plansza['zbite']:
+                    if int(skad) != 0:
+                        return "Najpierw musisz ściągnąć zbite pionki"
+                    else:
+                        if 25-int(dokad) in mozliwe_ruchy:
+                            if 'bordo' in self.plansza[dokad_pole]:
+                                if len(self.plansza[dokad_pole]) == 1:
+                                    self.zbij_pionek(dokad_pole)
+                                else:
+                                    return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                            wartosc_ruchu = 25-int(dokad)
+                            self.plansza[dokad_pole].append('bialy')
+                            self.plansza['zbite'].remove('bialy')
+                            self.usun_wykorzystany_ruch(wartosc_ruchu)
+                            return
+                        else:
+                            return "Nie możesz przesunąć pionka o tyle oczek"
                 wartosc_ruchu = int(skad)-int(dokad)
                 if wartosc_ruchu in mozliwe_ruchy:
-                    if 'bordo' in self.plansza[dokad_pole]:
-                        if len(self.plansza[dokad_pole]) == 1:
-                            self.zbij_pionek(dokad_pole)
-                        else:
-                            return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
                     if 'bialy' in self.plansza[skad_pole]:
+                        if 'bordo' in self.plansza[dokad_pole]:
+                            if len(self.plansza[dokad_pole]) == 1:
+                                self.zbij_pionek(dokad_pole)
+                            else:
+                                return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
                         self.plansza[dokad_pole].append('bialy')
                         self.plansza[skad_pole].pop()
+                        self.usun_wykorzystany_ruch(wartosc_ruchu)
                     elif 'bordo' in self.plansza[skad_pole]:
                         return 'To nie twój kolor pionków!'
                     else:
@@ -118,13 +158,17 @@ class Gra:
                 else:
                     return 'Nie możesz przesunąć pionka o taką liczbę oczek'
 
+
+
+    def usun_wykorzystany_ruch(self, wartosc_ruchu):
+        """Usuwa wykorzystane wartości ruchu z aktywnych rzutów"""
         if wartosc_ruchu in self.aktywne_rzuty:
             self.aktywne_rzuty.remove(wartosc_ruchu)
         else:
             if len(self.aktywne_rzuty) == 2:
                 self.aktywne_rzuty = []
             else:
-                x = int(wartosc_ruchu/self.aktywne_rzuty[0])
+                x = int(wartosc_ruchu / self.aktywne_rzuty[0])
                 del self.aktywne_rzuty[-x:]
         if len(self.aktywne_rzuty) == 0:
             self.koniec_kolejki()
@@ -132,9 +176,14 @@ class Gra:
 
     def zbij_pionek(self, pole):
         """Zbija pionek z pola przekazanego w zmiennej"""
-        pionek = self.plansza[pole]
+        if self.aktywny_kolor == 'bordo':
+            pionek = 'bialy'
+        else:
+            pionek = 'bordo'
+        self.plansza['zbite'].append(pionek)
         self.plansza[pole].pop()
-        self.zbite.append(pionek)
+        
+
 
 
 
@@ -179,7 +228,7 @@ def ruch():
     dokad = request.values['pole']
     komunikat = gra.ruch(skad, dokad)
     rzuty = gra.rzuty
-    zbite = gra.zbite
+    zbite = gra.plansza['zbite']
 
     with open('zapis.pickle', 'wb') as handle:
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
