@@ -15,17 +15,31 @@
             {% endif %}
         {% endfor %}
     </div>
-    Ruchy możliwe do wykonania:
+    Pozostałe wartości ruchu:
     {%  for x in ruchy %}
         {{ x }}
     {%  endfor %}<br>
-    Wybierz kolejny ruch:
-    <form method = "get" method = "/gra">
-        <input type = "text" name = "pionek">
-        <input type = "text" name = "pole">
-        <input type = "submit" value = "Zatwierdź">
-    </form><br>
-        {{ komunikat }}
+    Ruchy możliwe do wykonania:
+
+        {{ mozliwe_ruchy }}
+    {% if kolejka == 'Komputer' %}
+        Teraz komputer ma kolejkę!
+        <form method = "get" method = "/gra">
+            <input type = "submit" value = "Ok">
+        </form><br>
+    {% else %}
+        Wybierz kolejny ruch:
+        <form method = "get" method = "/gra">
+            <input type = "text" name = "pionek">
+            <input type = "text" name = "pole">
+            <input type = "submit" value = "Zatwierdź">
+        </form><br>
+    {% endif %}
+    {% if komunikaty %}
+        {% for komunikat in komunikaty %}
+            {{ komunikat }}
+        {% endfor %}
+    {% endif %}
 {% endblock %}
 {% block content %}
     <div id = "plansza">
@@ -36,7 +50,9 @@
                     <p>{{ loop.index }}</p>
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
-                    <p>{{ loop.index }}</p>
+                    {% if loop.index < 25 %}
+                        <p>{{ loop.index }}</p>
+                    {% endif %}
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}

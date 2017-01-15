@@ -61,21 +61,68 @@ class Gra:
             self.aktywny_kolor = 'bordo'
         self.rzut_kostka()
 
-    def znajdz_mozliwe_ruchy(self):
+    def znajdz_pozostale_ruchy(self):
         """Na podstawie wyrzuconych kostek zwraca wartości ruchu możliwe do wykonania"""
-        mozliwe_ruchy = []
+        pozostale_ruchy = []
         if len(self.aktywne_rzuty) == 1:
-            mozliwe_ruchy.append(self.aktywne_rzuty[0])
+            pozostale_ruchy.append(self.aktywne_rzuty[0])
         elif len(self.aktywne_rzuty) == 2:
-            mozliwe_ruchy.append(self.aktywne_rzuty[0])
-            mozliwe_ruchy.append(self.aktywne_rzuty[1])
-            mozliwe_ruchy.append(self.aktywne_rzuty[0] + self.aktywne_rzuty[1])
+            pozostale_ruchy.append(self.aktywne_rzuty[0])
+            pozostale_ruchy.append(self.aktywne_rzuty[1])
+            pozostale_ruchy.append(self.aktywne_rzuty[0] + self.aktywne_rzuty[1])
         elif len(self.aktywne_rzuty) > 2:
             licznik = 1
             for x in self.aktywne_rzuty:
-                mozliwe_ruchy.append(x * licznik)
+                pozostale_ruchy.append(x * licznik)
                 licznik += 1
+        return pozostale_ruchy
+
+    def znajdz_mozliwe_ruchy(self):
+        """Znajduje ruchy możliwe do wykonania przy aktualnie wyrzuconych kostkach"""
+        pozostale_ruchy = self.znajdz_pozostale_ruchy()
+        numer_pola = 1
+        mozliwe_ruchy = dict()
+        if self.aktywny_kolor == 'bialy':
+            mozliwe_ruchy[0] = []
+            if 'bialy' in self.plansza['zbite']:
+                for ruch in pozostale_ruchy:
+                    if 0 < 25-ruch < 25:
+                        dokad = 25-ruch
+                        pole_dokad = 'pole_' + str(dokad)
+                        if 'bialy' in self.plansza[pole_dokad] or not self.plansza[pole_dokad] or len(self.plansza[pole_dokad]) == 1:
+                            mozliwe_ruchy[0].append(ruch)
+            else:
+                for pole, wartosc in self.plansza.items():
+                    if 'bialy' in wartosc:
+                        mozliwe_ruchy[numer_pola] = []
+                        for ruch in pozostale_ruchy:
+                            if numer_pola - ruch > 0 and numer_pola - ruch < 25:
+                                dokad = numer_pola - ruch
+                                pole_dokad = 'pole_'+str(dokad)
+                                if 'bialy' in self.plansza[pole_dokad] or not self.plansza[pole_dokad] or len(self.plansza[pole_dokad]) == 1:
+                                    mozliwe_ruchy[numer_pola].append(dokad)
+                    numer_pola += 1
+        elif self.aktywny_kolor == 'bordo':
+            if 'bordo' in self.plansza['zbite']:
+                mozliwe_ruchy[0] = []
+                for ruch in pozostale_ruchy:
+                    if 0 < ruch < 25:
+                        pole_dokad = 'pole_' + str(ruch)
+                        if 'bordo' in self.plansza[pole_dokad] or not self.plansza[pole_dokad] or len(self.plansza[pole_dokad]) == 1:
+                            mozliwe_ruchy[0].append(ruch)
+            else:
+                for pole, wartosc in self.plansza.items():
+                    if 'bordo' in wartosc:
+                        mozliwe_ruchy[numer_pola] = []
+                        for ruch in pozostale_ruchy:
+                            if numer_pola + ruch > 0 and numer_pola + ruch < 25:
+                                dokad = numer_pola + ruch
+                                pole_dokad = 'pole_'+str(dokad)
+                                if 'bordo' in self.plansza[pole_dokad] or not self.plansza[pole_dokad] or len(self.plansza[pole_dokad]) == 1:
+                                    mozliwe_ruchy[numer_pola].append(dokad)
+                    numer_pola += 1
         return mozliwe_ruchy
+
 
     def ruch(self, skad, dokad):
         """Wykonuje ruch na podstawie przekazanych wartości pól"""
@@ -85,7 +132,7 @@ class Gra:
         else:
             skad_pole = 'pole_' + str(skad)
         dokad_pole = 'pole_' + str(dokad)
-        mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
+        pozostale_ruchy = self.znajdz_pozostale_ruchy()
 
         if self.aktywny_kolor == 'bordo':
             wartosc_ruchu = int(dokad) - int(skad)
@@ -93,7 +140,7 @@ class Gra:
                 if int(skad) != 0:
                     return "Najpierw musisz ściągnąć zbite pionki"
                 else:
-                    if int(dokad) in mozliwe_ruchy:
+                    if int(dokad) in pozostale_ruchy:
                         if 'bialy' in self.plansza[dokad_pole]:
                             if len(self.plansza[dokad_pole]) == 1:
                                 self.zbij_pionek(dokad_pole)
@@ -105,7 +152,7 @@ class Gra:
                         return
                     else:
                         return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
-            if wartosc_ruchu in mozliwe_ruchy:
+            if wartosc_ruchu in pozostale_ruchy:
                 if 'bordo' in self.plansza[skad_pole]:
                     if 'bialy' in self.plansza[dokad_pole]:
                         if len(self.plansza[dokad_pole]) == 1:
@@ -127,7 +174,7 @@ class Gra:
                     if int(skad) != 0:
                         return "Najpierw musisz ściągnąć zbite pionki"
                     else:
-                        if 25-int(dokad) in mozliwe_ruchy:
+                        if 25-int(dokad) in pozostale_ruchy:
                             if 'bordo' in self.plansza[dokad_pole]:
                                 if len(self.plansza[dokad_pole]) == 1:
                                     self.zbij_pionek(dokad_pole)
@@ -141,7 +188,7 @@ class Gra:
                         else:
                             return "Nie możesz przesunąć pionka o tyle oczek"
                 wartosc_ruchu = int(skad)-int(dokad)
-                if wartosc_ruchu in mozliwe_ruchy:
+                if wartosc_ruchu in pozostale_ruchy:
                     if 'bialy' in self.plansza[skad_pole]:
                         if 'bordo' in self.plansza[dokad_pole]:
                             if len(self.plansza[dokad_pole]) == 1:
@@ -158,6 +205,52 @@ class Gra:
                 else:
                     return 'Nie możesz przesunąć pionka o taką liczbę oczek'
 
+    def ruch_komputera(self):
+        mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
+        numer_pola = 1
+        ewentualne_ruchy = dict()
+        if 1 in mozliwe_ruchy or 2 in mozliwe_ruchy or 3 in mozliwe_ruchy or 4 in mozliwe_ruchy or 5 in mozliwe_ruchy or 6 in mozliwe_ruchy:
+            for pionek, ruchy in mozliwe_ruchy:
+                if pionek == 1 or pionek == 2 or pionek == 3 or pionek == 4 or pionek == 5 or pionek == 6:
+                    for ruch in ruchy:
+                        dokad = pionek-ruch
+                        dokad_pole = 'pole_'+str(dokad)
+                        skad_pole = 'pole_'+str(pionek)
+                        if len(self.plansza[skad_pole]) != 2 and 'bialy' in self.plansza[dokad_pole] or len(self.plansza[dokad_pole] == 1) :
+                            self.plansza[dokad_pole].append('bialy')
+                            self.plansza[skad_pole].pop()
+                            return
+                        else:
+                            ewentualne_ruchy[skad_pole] = dokad_pole
+        else:
+            for pole, wartosc in self.plansza:
+                if 'bialy' in wartosc and len(self.plansza[pole]) == 1:
+                    if numer_pola in mozliwe_ruchy:
+                        ruchy = mozliwe_ruchy[numer_pola]
+                        for ruch in ruchy:
+                            dokad = numer_pola - ruch
+                            dokad_pole = 'pole_' + str(dokad)
+                            skad_pole = 'pole_' + str(numer_pola)
+
+
+    def ruch_komp(self):
+        mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
+        for pionek, ruchy in mozliwe_ruchy.items():
+            if ruchy:
+                dokad_pole = 'pole_' + str(ruchy[0])
+                skad_pole = 'pole_' + str(pionek)
+                self.plansza[dokad_pole].append('bialy')
+                self.plansza[skad_pole].pop()
+                wartosc_ruchu = ruchy[0]-pionek
+                self.usun_wykorzystany_ruch(wartosc_ruchu)
+                return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
+
+    def wywolaj_ruch(self):
+        komunikaty = []
+        while self.kolejka == 'Komputer':
+            komunikaty.append(self.ruch_komp())
+        return komunikaty
+
 
 
     def usun_wykorzystany_ruch(self, wartosc_ruchu):
@@ -172,7 +265,7 @@ class Gra:
                 del self.aktywne_rzuty[-x:]
         if len(self.aktywne_rzuty) == 0:
             self.koniec_kolejki()
-        self.znajdz_mozliwe_ruchy()
+        self.znajdz_pozostale_ruchy()
 
     def zbij_pionek(self, pole):
         """Zbija pionek z pola przekazanego w zmiennej"""
@@ -215,7 +308,7 @@ def gra():
     with open('zapis.pickle', 'wb') as handle:
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    return render_template('gra.html', rzuty=rzuty, ruchy = gra.znajdz_mozliwe_ruchy(), aktywne_rzuty = gra.aktywne_rzuty,
+    return render_template('gra.html', rzuty=rzuty, ruchy = gra.znajdz_pozostale_ruchy(), aktywne_rzuty = gra.aktywne_rzuty,
                            typ_gry=gra.typ_gry, stan_gry = gra.plansza, kolejka=gra.kolejka)
 
 
@@ -224,14 +317,19 @@ def ruch():
     with open('zapis.pickle', 'rb') as handle:
         gra = pickle.load(handle)
 
-    skad = request.values['pionek']
-    dokad = request.values['pole']
-    komunikat = gra.ruch(skad, dokad)
+    if gra.typ_gry == 'komputer' and gra.kolejka == 'Komputer':
+        komunikaty = gra.wywolaj_ruch()
+    else:
+        skad = request.values['pionek']
+        dokad = request.values['pole']
+        komunikaty = gra.ruch(skad, dokad)
+
     rzuty = gra.rzuty
     zbite = gra.plansza['zbite']
 
     with open('zapis.pickle', 'wb') as handle:
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
-    return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_mozliwe_ruchy(),
-                           typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikat=komunikat, kolejka=gra.kolejka, zbite=zbite)
+    return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_pozostale_ruchy(),
+                           typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikaty=komunikaty, kolejka=gra.kolejka, zbite=zbite,
+                           mozliwe_ruchy = gra.znajdz_mozliwe_ruchy())

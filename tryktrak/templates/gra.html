@@ -31,7 +31,9 @@
                     <p>{{ loop.index }}</p>
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
-                    <p>{{ loop.index }}</p>
+                    {%  if loop.index < 25 %}
+                        <p>{{ loop.index }}</p>
+                    {% endif %}
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}
