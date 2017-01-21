@@ -1,42 +1,47 @@
 {% extends "base.html" %}
 {% block title %}Gra{% endblock %}
 {%  block lewy %}
-    Typ gry: {{ typ_gry }}<br>
-    Aktywny gracz: {{ kolejka }}<br>
-
-    Rzuty kostką:<br>
-    <div id = "kostki">
-        Rzuty do wykorzystania:<br>
-        {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
-        {% for rzut in rzuty %}
-            {% if loop.index < 3 %}
-                {% set sciezka = sciezki[rzut-1] %}
-                <img src = "{{ sciezka }}">
-            {% endif %}
-        {% endfor %}
-    </div>
-    Pozostałe wartości ruchu:
-    {%  for x in ruchy %}
-        {{ x }}
-    {%  endfor %}<br>
-    Ruchy możliwe do wykonania:
-
-        {{ mozliwe_ruchy }}
-    {% if kolejka == 'Komputer' %}
-        Teraz komputer ma kolejkę!
-        <form method = "get" method = "/gra">
-            <input type = "submit" value = "Ok">
-        </form><br>
+    {% if koniec %}
+        Koniec gry!
+        Wygrany: {{ wygrany }}
     {% else %}
-        Wybierz kolejny ruch:
-        <form method = "get" method = "/gra">
-            <input type = "text" name = "pionek">
-            <input type = "text" name = "pole">
-            <input type = "submit" value = "Zatwierdź">
-        </form><br>
-    {% endif %}
-    {% if komunikaty %}
-        {{ komunikaty }}
+        Typ gry: {{ typ_gry }}<br>
+        Aktywny gracz: {{ kolejka }}<br>
+
+        Rzuty kostką:<br>
+        <div id = "kostki">
+            Rzuty do wykorzystania:<br>
+            {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
+            {% for rzut in rzuty %}
+                {% if loop.index < 3 %}
+                    {% set sciezka = sciezki[rzut-1] %}
+                    <img src = "{{ sciezka }}">
+                {% endif %}
+            {% endfor %}
+        </div>
+        Pozostałe wartości ruchu:
+        {%  for x in ruchy %}
+            {{ x }}
+        {%  endfor %}<br>
+        Ruchy możliwe do wykonania:
+
+            {{ mozliwe_ruchy }}
+        {% if kolejka == 'Komputer' %}
+            Teraz komputer ma kolejkę!
+            <form method = "get" method = "/gra">
+                <input type = "submit" value = "Ok">
+            </form><br>
+        {% else %}
+            Wybierz kolejny ruch:
+            <form method = "get" method = "/gra">
+                <input type = "text" name = "pionek">
+                <input type = "text" name = "pole">
+                <input type = "submit" value = "Zatwierdź">
+            </form><br>
+        {% endif %}
+        {% if komunikaty %}
+            {{ komunikaty }}
+        {% endif %}
     {% endif %}
 {% endblock %}
 {% block content %}
