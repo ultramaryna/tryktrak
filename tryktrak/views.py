@@ -22,7 +22,6 @@ class Gra:
             numer = x+1
             klucz = 'pole_'+str(numer)
             self.plansza[klucz] = []
-        self.plansza['pole_x'] = []
         self.plansza['zbite'] = []
         self.plansza['pole_1'] = ['bordo', 'bordo']
         self.plansza['pole_6'] = ['bialy', 'bialy', 'bialy', 'bialy', 'bialy']
@@ -492,8 +491,8 @@ def ruch():
     if gra.typ_gry == 'komputer' and gra.kolejka == 'Komputer':
         komunikaty = gra.ruch_komputera()
     else:
-        skad = request.values['pionek']
-        dokad = request.values['pole']
+        skad = request.values['skad']
+        dokad = request.values['dokad']
         komunikaty = gra.ruch(skad, dokad)
 
     rzuty = gra.rzuty
