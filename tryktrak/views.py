@@ -169,9 +169,11 @@ class Gra:
         mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
         sciaganie = 1
         numer_pola_dom = 1
+        #Sprawdza, czy użytkownik może wykonać jakikolwiek ruch
         if not mozliwe_ruchy:
             self.koniec_kolejki()
             return "Użytkownik nie miał żadnych możliwych ruchów. Następna kolejka."
+        #Przypisuje wartości do zmiennych skad_pole i dokad_pole
         else:
             if int(skad) == 0:
                 skad_pole = 'zbite'
@@ -180,11 +182,14 @@ class Gra:
             dokad_pole = 'pole_' + str(dokad)
             pozostale_ruchy = self.znajdz_pozostale_ruchy()
 
+            #Wykonuje ruch dla bordowych pionków
             if self.aktywny_kolor == 'bordo':
+                #Sprawdza, czy gracz może już ściągać pionki z planszy
                 for pole, wartosc in self.plansza.items():
                     if numer_pola_dom < 19 and 'bordo' in wartosc:
                         sciaganie = 0
                     numer_pola_dom += 1
+                #Wykonuje ruch ściągania pionków z planszy (jeśli jest możliwy)
                 if dokad == 'x':
                     if sciaganie and 'bordo' in self.plansza[skad_pole]:
                         self.plansza[skad_pole].pop()
@@ -194,31 +199,41 @@ class Gra:
                         return "Nie możesz jeszcze ściągać pionków z planszy!"
                     else:
                         return "Nie wiem, co to za gówno"
+                #Wykonuje normalny ruch
                 else:
                     wartosc_ruchu = int(dokad) - int(skad)
+                    #Wykonuje ruch, jeśli jakiś pionek gracza jest zbity
                     if 'bordo' in self.plansza['zbite']:
                         if int(skad) != 0:
                             return "Najpierw musisz ściągnąć zbite pionki"
                         else:
                             if int(dokad) in pozostale_ruchy:
+                                #Sprawdza, czy na polu "dokąd" znajdują się jakieś pionki przeciwnika
                                 if 'bialy' in self.plansza[dokad_pole]:
+                                    #Jeśli na polu "dokad" znajduje się jeden pionek przeciwnika, zostaje zbity
                                     if len(self.plansza[dokad_pole]) == 1:
                                         self.zbij_pionek(dokad_pole)
                                     else:
                                         return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                                #Wykonuje poprawny ruch
                                 self.plansza[dokad_pole].append('bordo')
                                 self.plansza['zbite'].remove('bordo')
                                 self.usun_wykorzystany_ruch(wartosc_ruchu)
                                 return
                             else:
                                 return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                    #Wykonuje ruch
                     if wartosc_ruchu in pozostale_ruchy:
+                        #Sprawdza, czy na polu "skąd" znajduje się pionek gracza
                         if 'bordo' in self.plansza[skad_pole]:
+                            #Sprawdza, czy na polu "dokąd" znajdują się pionki przeciwnika
                             if 'bialy' in self.plansza[dokad_pole]:
+                                #Jeśli na polu "dokąd" jest jeden pionek przeciwnika, zostaje zbity
                                 if len(self.plansza[dokad_pole]) == 1:
                                     self.zbij_pionek(dokad_pole)
                                 else:
                                     return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                            #Wykonuje poprawny ruch
                             self.plansza[dokad_pole].append('bordo')
                             self.plansza[skad_pole].pop()
                             self.usun_wykorzystany_ruch(wartosc_ruchu)
@@ -229,29 +244,37 @@ class Gra:
                     else:
                         return 'Nie możesz przesunąć pionka o taką liczbę oczek'
             else:
+                #Wykonuje ruch dla białych pionków
                 if self.aktywny_kolor == 'bialy':
+                    #Sprawdza, czy możliwe jest już ściąganie pionków z planszy
+                    for pole, wartosc in self.plansza.items():
+                        if numer_pola_dom > 6 and 'bialy' in wartosc:
+                            sciaganie = 0
+                        numer_pola_dom += 1
+                    #Wykonuje ruch ściągania pionka z planszy (jeśli jest możliwy)
+                    if dokad == 'x':
+                        if sciaganie and 'bialy' in self.plansza[skad_pole]:
+                            self.plansza[skad_pole].pop()
+                            self.usun_wykorzystany_ruch(int(skad))
+                            return
+                        elif not sciaganie:
+                            return "Nie możesz jeszcze ściągać pionków z planszy!"
+                        else:
+                            return "Nie wiem, co to za gówno"
+                    #Wykonuje ruch, jeśli pionek gracza jest zbity
                     if 'bialy' in self.plansza['zbite']:
                         if int(skad) != 0:
                             return "Najpierw musisz ściągnąć zbite pionki"
                         else:
-                            for pole, wartosc in self.plansza.items():
-                                if 'bialy' in wartosc:
-                                    wygrana = 0
-                                if numer_pola_dom > 6 and 'bialy' in wartosc:
-                                    sciaganie = 0
-                                numer_pola_dom += 1
-                            if wygrana:
-                                return "Wygrał biały!"
-                            if sciaganie and dokad == 'x' and 'bialy' in self.plansza[skad_pole] and int(skad) in pozostale_ruchy:
-                                self.plansza[skad_pole].pop()
-                                self.usun_wykorzystany_ruch(int(skad))
-                                return
                             if 25-int(dokad) in pozostale_ruchy:
+                                #Sprawdza, czy na polu "dokąd" znajdują się pionki przeciwnika
                                 if 'bordo' in self.plansza[dokad_pole]:
+                                    #Jeśli na polu "dokąd" znajduje się jeden pionek przeciwnika, zostaje zbity
                                     if len(self.plansza[dokad_pole]) == 1:
                                         self.zbij_pionek(dokad_pole)
                                     else:
                                         return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                                #Wykonuje ruch
                                 wartosc_ruchu = 25-int(dokad)
                                 self.plansza[dokad_pole].append('bialy')
                                 self.plansza['zbite'].remove('bialy')
@@ -259,14 +282,20 @@ class Gra:
                                 return
                             else:
                                 return "Nie możesz przesunąć pionka o tyle oczek"
+                    #Wykonuje zwykły ruch
                     wartosc_ruchu = int(skad)-int(dokad)
+                    #Sprawdza, czy gracz może wykonać ruch o tyle pól
                     if wartosc_ruchu in pozostale_ruchy:
+                        #Sprawdza, czy na polu "skąd" znajduje się pionek gracza
                         if 'bialy' in self.plansza[skad_pole]:
+                            #Sprawdza, czy na polu "dokąd" znajdują się pionki przeciwnika
                             if 'bordo' in self.plansza[dokad_pole]:
+                                #Jeśli na polu "dokąd" znajduje się jeden pionek przeciwnika, zostaje zbity
                                 if len(self.plansza[dokad_pole]) == 1:
                                     self.zbij_pionek(dokad_pole)
                                 else:
                                     return "Nie możesz przejść na pole, na którym znajdują się pionki przeciwnika"
+                            #Wykonuje poprawny ruch
                             self.plansza[dokad_pole].append('bialy')
                             self.plansza[skad_pole].pop()
                             self.usun_wykorzystany_ruch(wartosc_ruchu)
@@ -286,6 +315,8 @@ class Gra:
             self.plansza[dokad_pole].append('bialy')
             self.plansza[skad_pole].pop()
             self.usun_wykorzystany_ruch(wartosc_ruchu)
+        if dokad_pole != 'x' and 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
+            self.zbij_pionek(dokad_pole)
 
     def ruch_komputera(self):
         """Wykonuje ruch komputera"""
@@ -315,8 +346,6 @@ class Gra:
                 for ruch in mozliwe_ruchy[0]:
                     dokad_pole = 'pole_' + str(25 - ruch)
                     if 'bialy' in self.plansza[dokad_pole] or len(self.plansza[dokad_pole]) == 1:
-                        if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                            self.zbij_pionek(dokad_pole)
                         self.wykonaj_ruch_komputera('zbite', dokad_pole, ruch)
                         return "Komputer ściągnął zbity pionek na pole %d" % (ruch)
                     else:
@@ -324,8 +353,6 @@ class Gra:
                     if ewentualne_ruchy:
                         dokad_pole = 'pole_' + str(ewentualne_ruchy[0])
                         skad_pole = 'zbite'
-                        if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                            self.zbij_pionek(dokad_pole)
                         self.wykonaj_ruch_komputera(skad_pole, dokad_pole, ruch)
                         return "Komputer ściągnął zbity pionek na pole %d" % (ruch)
             #Sprawdza, czy jakieś pionki są w domu przeciwnika. Jeśli tak, przenosi je.
@@ -336,8 +363,6 @@ class Gra:
                             dokad_pole = 'pole_'+str(ruch)
                             skad_pole = 'pole_'+str(pionek)
                             if len(self.plansza[skad_pole]) != 2 and 'bialy' in self.plansza[dokad_pole] or len(self.plansza[dokad_pole]) == 1:
-                                if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                                    self.zbij_pionek(dokad_pole)
                                 wartosc_ruchu = pionek - ruch
                                 self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                                 return "Pierwszy Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruch)
@@ -348,8 +373,6 @@ class Gra:
                                 if ruchy:
                                     dokad_pole = 'pole_' + str(ruch)
                                     skad_pole = 'pole_' + str(pionek)
-                                    if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                                        self.zbij_pionek(dokad_pole)
                                     wartosc_ruchu = pionek - ruch
                                     self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                                     return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruch)
@@ -362,29 +385,33 @@ class Gra:
                             dokad_pole = 'pole_' + str(ruch)
                             if 'bialy' in self.plansza[dokad_pole] or 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
                                 skad_pole = 'pole_' + str(numer_pola)
-                                if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                                    self.zbij_pionek(dokad_pole)
                                 wartosc_ruchu = numer_pola - ruch
                                 self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                                 return
+                    else:
+                        for pionek, ruchy in mozliwe_ruchy.items():
+                            if numer_pola in ruchy:
+                                dokad_pole = 'pole_' + str(numer_pola)
+                                skad_pole = 'pole_' + str(pionek)
+                                wartosc_ruchu = pionek - numer_pola
+                                self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
+                numer_pola += 1
+
+
             #Jeśli nie wykonał żadnego z preferowanych ruchów, wybiera losowo jeden z możliwych
             if not sciaganie:
                 for pionek, ruchy in mozliwe_ruchy.items():
                     if pionek > 6 and ruchy:
                         skad_pole = 'pole_' + str(pionek)
                         dokad_pole = 'pole_' + str(ruchy[0])
-                        if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                            self.zbij_pionek(dokad_pole)
                         wartosc_ruchu = pionek-ruchy[0]
                         self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                         return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
             else:
                 for pionek, ruchy in mozliwe_ruchy.items():
-                    if ruchy:
+                    if 'x' in ruchy:
                         skad_pole = 'pole_' + str(pionek)
                         dokad_pole = 'pole_' + str(ruchy[0])
-                        if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-                            self.zbij_pionek(dokad_pole)
                         wartosc_ruchu = pionek-ruchy[0]
                         self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                         return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
