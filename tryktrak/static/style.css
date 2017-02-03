@@ -5,6 +5,10 @@ body {
 
 }
 
+main {
+    height:537px;
+}
+
 header {
 	background-color: #3E000C;
 	margin: 0;
@@ -117,6 +121,113 @@ main {
     width:38px;
 	height:255px;
     position:relative;
-    left:285px;
-    top:60px;
+    left:-120px;
+    bottom:600px;
+}
+
+input[type=radio].css-checkbox {
+    position:absolute;
+    z-index:-1000;
+    left:-1000px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    height:1px;
+    width:1px;
+    margin:-1px;
+    padding:0;
+    border:0;
+}
+
+input[type=radio].css-checkbox + label.css-label {
+    padding-left:34px;
+    height:34px;
+    display:inline-block;
+    line-height:34px;
+    background-repeat:no-repeat;
+    background-position: 0 0;
+    font-size:34px;
+    vertical-align:middle;
+    cursor:pointer;
+
+}
+
+input[type=radio].css-checkbox:checked + label.css-label {
+    background-position: 0 -34px;
+}
+
+label.css-label {
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    -khtml-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+label.radio-bordo {
+    background-image:url(http://i63.tinypic.com/2lu2xox.png);
+}
+
+label.radio-bialy {
+    background-image:url(http://i68.tinypic.com/2q07vhk.png);
+}
+
+#pole_x {
+    position:fixed;
+    right:0;
+}
+
+.numer-pola {
+    background-color: transparent;
+    border:none;
+    font-family: 'Roboto';
+    padding:20px 10px 20px 10px;
+    font-size:20px;
+    cursor:pointer;
+}
+
+.dolne_pole .numer-pola {
+    transform:rotate(180deg);
+}
+
+.button-sciaganie {
+    position: relative;
+    left: 600px;
+    bottom:445px;
+    padding:10px 10px 10px 10px;
+    background-color: transparent;
+    border: solid black 1px;
+    font-family: 'Robooto', sans-serif;
+    color:black;
+}
+
+
+
+.button-sciaganie:hover {
+    background-color: #3E000C;
+    color: white;
+    cursor: pointer;
+}
+
+.button-sciaganie:disabled {
+    cursor: not-allowed;
+    border-color:grey;
+    color:grey;
+}
+
+.button-sciaganie:disabled:hover {
+    border-color:grey;
+    color:grey;
+    background-color: transparent;
+}
+
+footer {
+    position:fixed;
+    bottom:0;
+    width: inherit;
+}
+
+footer p {
+    font-size:12px;
+    text-align: center;
 }

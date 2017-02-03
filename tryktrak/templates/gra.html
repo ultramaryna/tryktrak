@@ -15,36 +15,41 @@
     {%  for x in ruchy %}
         {{ x }}
     {%  endfor %}<br>
-    Wybierz kolejny ruch:
-    <form method = "get" action = "/ruch">
-        <input type = "text" name = "pionek">
-        <input type = "text" name = "pole">
-        <input type = "submit" value = "Zatwierdź">
-    </form>
 {% endblock %}
 {% block content %}
     <div id = "plansza">
+    <form method="get" action="/ruch">
             {% set licznik = 0 %}
+            {% set radio = 1 %}
             {% for pole, wartosc in stan_gry.items() %}
                 {% if licznik < 12 %}
                     <div id = {{ pole }} class = "pole dolne_pole">
-                    <p>{{ loop.index }}</p>
+                    <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
                 {% else %}
-                    <div id = {{ pole }} class = "pole gorne_pole">
-                    {%  if loop.index < 25 %}
-                        <p>{{ loop.index }}</p>
-                    {% endif %}
+                        <div id = {{ pole }} class = "pole gorne_pole">
+                        {%  if loop.index < 25 %}
+                            <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
+                        {% endif %}
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}
                     {% if pionek == 'bordo' %}
-                        <div class = "pionek_bordo"></div>
+                        <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                        <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
                     {% elif pionek == 'bialy' %}
-                        <div class = "pionek_bialy"></div>
+                        <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                        <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
                     {% endif %}
                 {% endfor %}
+                {% set radio = radio+1 %}
                     </div>
             {% endfor %}
+            {% if sciaganie == 1 %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie">Ściągnij pionek<br> z planszy</button>
+            {% else %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij pionek<br> z planszy</button>
+            {% endif %}
+    </form>
     </div>
 {% endblock %}
 {% block script %}
