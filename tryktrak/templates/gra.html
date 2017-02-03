@@ -44,6 +44,11 @@
                 {% set radio = radio+1 %}
                     </div>
             {% endfor %}
+            {% if sciaganie == 1 %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie">Ściągnij pionek<br> z planszy</button>
+            {% else %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij pionek<br> z planszy</button>
+            {% endif %}
     </form>
     </div>
 {% endblock %}

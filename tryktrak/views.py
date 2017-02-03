@@ -311,11 +311,13 @@ class Gra:
             self.plansza[skad_pole].pop()
             self.usun_wykorzystany_ruch(wartosc_ruchu)
         else:
+            if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
+                self.zbij_pionek(dokad_pole)
             self.plansza[dokad_pole].append('bialy')
             self.plansza[skad_pole].pop()
             self.usun_wykorzystany_ruch(wartosc_ruchu)
-        if dokad_pole != 'x' and 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
-            self.zbij_pionek(dokad_pole)
+
+
 
     def ruch_komputera(self):
         """Wykonuje ruch komputera"""
@@ -414,6 +416,15 @@ class Gra:
                         wartosc_ruchu = pionek-ruchy[0]
                         self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                         return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
+                for pionek, ruchy in mozliwe_ruchy.items():
+                    if ruchy:
+                        skad_pole = 'pole_' + str(pionek)
+                        dokad_pole = 'pole_' + str(ruchy[0])
+                        wartosc_ruchu = pionek-ruchy[0]
+                        self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
+                        return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
+
+
 
 
 
@@ -450,6 +461,13 @@ class Gra:
             self.wygrany = self.gracz2
 
 
+    def czy_sciaganie(self):
+        mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
+        sciaganie = 0
+        for pionek, ruchy in mozliwe_ruchy.items():
+            if 'x' in ruchy:
+                sciaganie = 1
+        return sciaganie
 
 
 @app.route('/')
@@ -507,4 +525,4 @@ def ruch():
 
     return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_pozostale_ruchy(),
                            typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikaty=komunikaty, kolejka=gra.kolejka, zbite=zbite,
-                           mozliwe_ruchy = gra.znajdz_mozliwe_ruchy(), koniec=koniec, wygrany=gra.wygrany)
+                           mozliwe_ruchy = gra.znajdz_mozliwe_ruchy(), koniec=koniec, wygrany=gra.wygrany, sciaganie = gra.czy_sciaganie())

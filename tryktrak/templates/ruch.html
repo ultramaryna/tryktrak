@@ -68,12 +68,19 @@
             <div id = "zbite" style="left:285px;">
                 {% for pionek in zbite %}
                     {% if 'bordo' in pionek %}
-                        <div class = "pionek_bordo"></div>
+                        <input type="radio" name="skad" id = "zbite-{{ loop.index }}" value = "0" class = "css-checkbox">
+                        <label for="zbite-{{ loop.index }}" class="css-label radio-bordo"></label>
                     {% elif 'bialy' in pionek %}
-                        <div class = "pionek_bialy"></div>
+                        <input type="radio" name="skad" id = "zbite-{{ loop.index }}" value = "0" class = "css-checkbox">
+                        <label for="zbite-{{ loop.index }}" class="css-label radio-bialy"></label>
                     {% endif %}
                 {% endfor %}
             </div>
+            {% if sciaganie == 1 %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie">Ściągnij pionek<br> z planszy</button>
+            {% else %}
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij pionek<br> z planszy</button>
+            {% endif %}
     </form>
     </div>
 {% endblock %}
