@@ -80,6 +80,10 @@ class Gra:
         sciaganie = 1
         mozliwe_ruchy = dict()
         if self.aktywny_kolor == 'bialy':
+            for pole, wartosc in self.plansza.items():
+                if numer_pola_dom > 6 and 'bialy' in wartosc:
+                    sciaganie = 0
+                numer_pola_dom += 1
             if 'bialy' in self.plansza['zbite']:
                 ruchy = []
                 for ruch in pozostale_ruchy:
@@ -91,10 +95,6 @@ class Gra:
                 if ruchy:
                     mozliwe_ruchy[0] = ruchy
             else:
-                for pole, wartosc in self.plansza.items():
-                    if numer_pola_dom > 6 and 'bialy' in wartosc:
-                        sciaganie = 0
-                    numer_pola_dom += 1
                 for pole, wartosc in self.plansza.items():
                     ruchy = []
                     if 'bialy' in wartosc:
@@ -111,13 +111,17 @@ class Gra:
                     numer_pola += 1
             numer_pola_dom = 1
             zajete_dom = []
-            if not mozliwe_ruchy and sciaganie == 1 and not self.czy_wygrana():
+            if not mozliwe_ruchy and sciaganie and not self.czy_wygrana():
                 for pole, wartosc in self.plansza.items():
                     if 'bialy' in wartosc and numer_pola_dom < 7:
                         zajete_dom.append(numer_pola_dom)
                     numer_pola_dom += 1
                 mozliwe_ruchy[max(zajete_dom)] = 'x'
         elif self.aktywny_kolor == 'bordo':
+            for pole, wartosc in self.plansza.items():
+                if numer_pola_dom < 19 and 'bordo' in wartosc:
+                    sciaganie = 0
+                numer_pola_dom += 1
             if 'bordo' in self.plansza['zbite']:
                 ruchy = []
                 for ruch in pozostale_ruchy:
@@ -128,10 +132,6 @@ class Gra:
                 if ruchy:
                     mozliwe_ruchy[0] = ruchy
             else:
-                for pole, wartosc in self.plansza.items():
-                    if numer_pola_dom < 19 and 'bordo' in wartosc:
-                        sciaganie = 0
-                    numer_pola_dom += 1
                 for pole, wartosc in self.plansza.items():
                     ruchy = []
                     if 'bordo' in wartosc:
@@ -148,7 +148,7 @@ class Gra:
                     numer_pola += 1
             numer_pola_dom = 1
             zajete_dom = []
-            if not mozliwe_ruchy and sciaganie == 1 and not self.czy_wygrana():
+            if not mozliwe_ruchy and sciaganie and not self.czy_wygrana():
                 for pole, wartosc in self.plansza.items():
                     if 'bordo' in wartosc and numer_pola_dom > 18:
                         zajete_dom.append(numer_pola_dom)
@@ -313,8 +313,8 @@ class Gra:
         else:
             if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
                 self.zbij_pionek(dokad_pole)
+            self.plansza[skad_pole].remove('bialy')
             self.plansza[dokad_pole].append('bialy')
-            self.plansza[skad_pole].pop()
             self.usun_wykorzystany_ruch(wartosc_ruchu)
 
 
@@ -332,7 +332,7 @@ class Gra:
                 if 'x' in ruchy:
                     skad_pole = 'pole_'+str(skad)
                     self.wykonaj_ruch_komputera(skad_pole, 'x', skad)
-                    return
+                    return "Komputer ściągnął pionek z planszy z pola %d" % (skad)
             # Sprawdza, czy komputer może już ściągać pionki z planszy
             sciaganie = 1
             numer_pola_dom = 1
@@ -347,7 +347,8 @@ class Gra:
                 for ruch in mozliwe_ruchy[0]:
                     dokad_pole = 'pole_' + str(25 - ruch)
                     if 'bialy' in self.plansza[dokad_pole] or len(self.plansza[dokad_pole]) == 1:
-                        self.wykonaj_ruch_komputera('zbite', dokad_pole, ruch)
+                        skad_pole = 'zbite'
+                        self.wykonaj_ruch_komputera(skad_pole, dokad_pole, ruch)
                         return "Komputer ściągnął zbity pionek na pole %d" % (ruch)
                     else:
                         ewentualne_ruchy[0] = 25-ruch
@@ -388,7 +389,7 @@ class Gra:
                                 skad_pole = 'pole_' + str(numer_pola)
                                 wartosc_ruchu = numer_pola - ruch
                                 self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
-                                return
+                                return "Komputer wykonał ruch z pola %d na pole %d" % (numer_pola, ruch)
                     else:
                         for pionek, ruchy in mozliwe_ruchy.items():
                             if numer_pola in ruchy:
@@ -396,16 +397,25 @@ class Gra:
                                 skad_pole = 'pole_' + str(pionek)
                                 wartosc_ruchu = pionek - numer_pola
                                 self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
+                                return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, numer_pola)
                 numer_pola += 1
 
 
             #Jeśli nie wykonał żadnego z preferowanych ruchów, wybiera losowo jeden z możliwych
             if not sciaganie:
                 for pionek, ruchy in mozliwe_ruchy.items():
-                    if pionek > 6 and ruchy:
+                    skad_pole = 'pole_' + str(pionek)
+                    if pionek > 6 and ruchy and self.plansza[skad_pole]:
                         skad_pole = 'pole_' + str(pionek)
                         dokad_pole = 'pole_' + str(ruchy[0])
                         wartosc_ruchu = pionek-ruchy[0]
+                        self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
+                        return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
+                for pionek, ruchy in mozliwe_ruchy.items():
+                    if ruchy and self.plansza[skad_pole]:
+                        skad_pole = 'pole_' + str(pionek)
+                        dokad_pole = 'pole_' + str(ruchy[0])
+                        wartosc_ruchu = pionek - ruchy[0]
                         self.wykonaj_ruch_komputera(skad_pole, dokad_pole, wartosc_ruchu)
                         return "Komputer wykonał ruch z pola %d na pole %d" % (pionek, ruchy[0])
             else:
@@ -433,11 +443,13 @@ class Gra:
         if wartosc_ruchu in self.aktywne_rzuty:
             self.aktywne_rzuty.remove(wartosc_ruchu)
         else:
-            if len(self.aktywne_rzuty) == 2:
+            if len(self.aktywne_rzuty) == 2 and self.aktywne_rzuty[0]+self.aktywne_rzuty[1] == wartosc_ruchu:
                 self.aktywne_rzuty = []
-            else:
+            elif self.aktywne_rzuty[0]*3 == wartosc_ruchu or self.aktywne_rzuty[0]*4 == wartosc_ruchu:
                 x = int(wartosc_ruchu / self.aktywne_rzuty[0])
                 del self.aktywne_rzuty[-x:]
+            else:
+                del self.aktywne_rzuty[0]
         if self.czy_wygrana():
             return self.koniec_gry()
         elif len(self.aktywne_rzuty) == 0:
@@ -450,8 +462,9 @@ class Gra:
             pionek = 'bialy'
         else:
             pionek = 'bordo'
-        self.plansza['zbite'].append(pionek)
         self.plansza[pole].pop()
+        self.plansza['zbite'].append(pionek)
+
 
 
     def koniec_gry(self):
@@ -509,9 +522,13 @@ def ruch():
     if gra.typ_gry == 'komputer' and gra.kolejka == 'Komputer':
         komunikaty = gra.ruch_komputera()
     else:
-        skad = request.values['skad']
-        dokad = request.values['dokad']
-        komunikaty = gra.ruch(skad, dokad)
+        if request.values['skad']:
+            skad = request.values['skad']
+            dokad = request.values['dokad']
+            komunikaty = gra.ruch(skad, dokad)
+        else:
+            komunikaty = "Najpierw musisz wybrać pionek do przeniesienia!"
+
 
     rzuty = gra.rzuty
     zbite = gra.plansza['zbite']

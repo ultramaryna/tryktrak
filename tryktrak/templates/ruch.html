@@ -4,6 +4,7 @@
     {% if koniec %}
         Koniec gry!
         Wygrany: {{ wygrany }}
+        <a class = "nowa-gra" href="/index">Nowa gra!</a>
     {% else %}
         Typ gry: {{ typ_gry }}<br>
         Aktywny gracz: {{ kolejka }}<br>
@@ -44,8 +45,8 @@
             {% set radio = 1 %}
             {% for pole, wartosc in stan_gry.items() %}
                 {% if licznik < 12 %}
-                    <div id = {{ pole }} class = "pole dolne_pole">
-                    <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
+                        <div id = {{ pole }} class = "pole dolne_pole">
+                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
                     {% if loop.index < 25 %}
@@ -55,11 +56,21 @@
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}
                     {% if pionek == 'bordo' %}
-                        <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
-                        <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
+                        {% if radio in mozliwe_ruchy %}
+                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
+                        {% else %}
+                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
+                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
+                        {% endif %}
                     {% elif pionek == 'bialy' %}
-                        <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
-                        <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
+                        {% if radio in mozliwe_ruchy %}
+                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
+                        {% else %}
+                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
+                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
+                        {% endif %}
                     {% endif %}
                 {% endfor %}
                 {% set radio = radio+1 %}
