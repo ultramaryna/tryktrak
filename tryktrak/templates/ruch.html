@@ -4,8 +4,13 @@
     {% if koniec %}
         Koniec gry!
         Wygrany: {{ wygrany }}
+        Punkty: {{ punkty }}
         <a class = "nowa-gra" href="/index">Nowa gra!</a>
     {% else %}
+        Ostatnie ruchy
+        {% for i in ostatnie_ruchy %}
+            {{ i }}
+        {% endfor %}
         Typ gry: {{ typ_gry }}<br>
         Aktywny gracz: {{ kolejka }}<br>
 
@@ -25,19 +30,19 @@
             {{ x }}
         {%  endfor %}<br>
         Ruchy możliwe do wykonania:
-
             {{ mozliwe_ruchy }}
         {% if kolejka == 'Komputer' %}
             Teraz komputer ma kolejkę!
-            <form method = "get">
-                <input type = "submit" value = "Ok">
-            </form><br>
+            <button id="ruch-komputera">Ok!</button>
+        {% endif %}
+        {% if ostatnie_ruchy and kolejka != 'Komputer' %}
+            <form method = "get" action="/ruch">
+                <input type = "submit" name = "cofanie" value = "Cofnij">
+            </form>
         {% endif %}
         {% if komunikaty %}
             {{ komunikaty }}
         {% endif %}
-        Ostatnie ruchy:
-            {{ ostanie_ruchy }}
     {% endif %}
 {% endblock %}
 {% block content %}
@@ -49,7 +54,7 @@
                 {% if licznik < 12 %}
                         <div id = {{ pole }} class = "pole dolne_pole">
                         <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = "{{ loop.index }}" disabled>
-                {% else %}
+                {% else%}
                     <div id = {{ pole }} class = "pole gorne_pole">
                     {% if loop.index < 25 %}
                         <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = {{ loop.index }} disabled>
@@ -89,11 +94,9 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {% if sciaganie == 1 %}
-                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie">Ściągnij pionek<br> z planszy</button>
-            {% else %}
+
                 <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij pionek<br> z planszy</button>
-            {% endif %}
+
     </form>
     </div>
 {% endblock %}
@@ -108,14 +111,25 @@
     $(document).ready(function() {
         $('input[name="skad"]').click(function() {
             $('input[name="dokad"]').attr('disabled', true);
+            $('.button-sciaganie').attr('disabled', true);
             var skad = $('input[name="skad"]:checked').val();
             var ruchy = {{ mozliwe_ruchy|tojson }};
             console.log(ruchy);
             for (var i in ruchy[skad]) {
                 ruch = ruchy[skad][i]
                 $('#'+ruch).attr('disabled', false);
+                if (ruch == 'x') {
+                    $('.button-sciaganie').attr('disabled', false);
+                }
             }
         });
+    });
+    </script>
+    <script>
+    $(document).ready(function () {
+       $('#ruch-komputera').click(function () {
+           location.reload();
+       });
     });
     </script>
 {% endblock %}
