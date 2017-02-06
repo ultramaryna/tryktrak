@@ -17,6 +17,7 @@ class Gra:
         else:
             self.aktywny_kolor = 'bialy'
         self.wygrany = ''
+        self.ostatnie_ruchy = []
         self.plansza = OrderedDict()
         for x in range(24):
             numer = x+1
@@ -310,17 +311,20 @@ class Gra:
         if dokad_pole == 'x' or dokad_pole == 'pole_x':
             self.plansza[skad_pole].pop()
             self.usun_wykorzystany_ruch(wartosc_ruchu)
+            self.dodaj_ostatni_ruch(skad_pole, dokad_pole)
         else:
             if 'bordo' in self.plansza[dokad_pole] and len(self.plansza[dokad_pole]) == 1:
                 self.zbij_pionek(dokad_pole)
             self.plansza[skad_pole].remove('bialy')
             self.plansza[dokad_pole].append('bialy')
             self.usun_wykorzystany_ruch(wartosc_ruchu)
+            self.dodaj_ostatni_ruch(skad_pole, dokad_pole)
 
 
 
     def ruch_komputera(self):
         """Wykonuje ruch komputera"""
+        global skad_pole
         mozliwe_ruchy = self.znajdz_mozliwe_ruchy()
         #Sprawdza, czy użytkownik może wykonać jakieś ruchy
         if not mozliwe_ruchy:
@@ -465,6 +469,12 @@ class Gra:
         self.plansza[pole].pop()
         self.plansza['zbite'].append(pionek)
 
+    def dodaj_ostatni_ruch(self, skad, dokad):
+        if len(self.ostatnie_ruchy) == 2:
+            del self.ostatnie_ruchy[0]
+        ruch = [skad, dokad]
+        self.ostatnie_ruchy.append(ruch)
+
 
 
     def koniec_gry(self):
@@ -496,7 +506,7 @@ def wybierzgraczy():
         pickle.dump(gra, handle, protocol=pickle.HIGHEST_PROTOCOL)
     return render_template('wybierzgraczy.html', typ_gry = gra.typ_gry)
 
-@app.route('/gra')
+@app.route('/gra', methods=['POST', 'GET'])
 def gra():
     with open('zapis.pickle', 'rb') as handle:
         gra = pickle.load(handle)
@@ -514,7 +524,7 @@ def gra():
                            typ_gry=gra.typ_gry, stan_gry = gra.plansza, kolejka=gra.kolejka)
 
 
-@app.route('/ruch')
+@app.route('/ruch', methods=['POST', 'GET'])
 def ruch():
     with open('zapis.pickle', 'rb') as handle:
         gra = pickle.load(handle)
@@ -522,9 +532,9 @@ def ruch():
     if gra.typ_gry == 'komputer' and gra.kolejka == 'Komputer':
         komunikaty = gra.ruch_komputera()
     else:
-        if request.values['skad']:
-            skad = request.values['skad']
-            dokad = request.values['dokad']
+        if request.form['skad']:
+            skad = request.form['skad']
+            dokad = request.form['dokad']
             komunikaty = gra.ruch(skad, dokad)
         else:
             komunikaty = "Najpierw musisz wybrać pionek do przeniesienia!"
@@ -542,4 +552,5 @@ def ruch():
 
     return render_template('ruch.html', rzuty=rzuty, aktywne_rzuty = gra.aktywne_rzuty, ruchy = gra.znajdz_pozostale_ruchy(),
                            typ_gry=gra.typ_gry, stan_gry=gra.plansza, komunikaty=komunikaty, kolejka=gra.kolejka, zbite=zbite,
-                           mozliwe_ruchy = gra.znajdz_mozliwe_ruchy(), koniec=koniec, wygrany=gra.wygrany, sciaganie = gra.czy_sciaganie())
+                           mozliwe_ruchy = gra.znajdz_mozliwe_ruchy(), koniec=koniec, wygrany=gra.wygrany, sciaganie = gra.czy_sciaganie(),
+                           ostatnie_ruchy = gra.ostatnie_ruchy)

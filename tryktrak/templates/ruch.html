@@ -36,27 +36,29 @@
         {% if komunikaty %}
             {{ komunikaty }}
         {% endif %}
+        Ostatnie ruchy:
+            {{ ostanie_ruchy }}
     {% endif %}
 {% endblock %}
 {% block content %}
     <div id = "plansza">
-    <form method="get">
+    <form method="post">
             {% set licznik = 0 %}
             {% set radio = 1 %}
             {% for pole, wartosc in stan_gry.items() %}
                 {% if licznik < 12 %}
                         <div id = {{ pole }} class = "pole dolne_pole">
-                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
+                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = "{{ loop.index }}" disabled>
                 {% else %}
                     <div id = {{ pole }} class = "pole gorne_pole">
                     {% if loop.index < 25 %}
-                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola">
+                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = {{ loop.index }} disabled>
                     {% endif %}
                 {% endif %}
                 {% set licznik = licznik+1 %}
                 {% for pionek in wartosc %}
                     {% if pionek == 'bordo' %}
-                        {% if radio in mozliwe_ruchy %}
+                        {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
                             <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
                             <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
                         {% else %}
@@ -64,7 +66,7 @@
                             <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
                         {% endif %}
                     {% elif pionek == 'bialy' %}
-                        {% if radio in mozliwe_ruchy %}
+                        {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
                             <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
                             <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
                         {% else %}
@@ -100,6 +102,20 @@
     $(document).ready(function(){
         $('#pole_18').after('<div id="belka_gora" class = "gorne_pole pole" style="width:28px;"></div>');
         $('#pole_6').after('<div id="belka_dol" class = "dolne_pole pole" style="width:28px;"></div>');
+    });
+    </script>
+    <script type=text/javascript>
+    $(document).ready(function() {
+        $('input[name="skad"]').click(function() {
+            $('input[name="dokad"]').attr('disabled', true);
+            var skad = $('input[name="skad"]:checked').val();
+            var ruchy = {{ mozliwe_ruchy|tojson }};
+            console.log(ruchy);
+            for (var i in ruchy[skad]) {
+                ruch = ruchy[skad][i]
+                $('#'+ruch).attr('disabled', false);
+            }
+        });
     });
     </script>
 {% endblock %}

@@ -18,7 +18,7 @@
 {% endblock %}
 {% block content %}
     <div id = "plansza">
-    <form method="get" action="/ruch">
+    <form method="post" action="/ruch">
             {% set licznik = 0 %}
             {% set radio = 1 %}
             {% for pole, wartosc in stan_gry.items() %}
