@@ -19,7 +19,7 @@ header {
 #lewy-bok {
 	width:20%;
 	background-color: #3E000C;
-	height:100%;
+	height:110%;
 	float:left;
 	color: white;
 }
@@ -198,16 +198,19 @@ label.radio-bialy {
 
 .button-sciaganie {
     position: relative;
-    left: 600px;
+    left: 620px;
     bottom:445px;
     padding:10px 10px 10px 10px;
     background-color: transparent;
     border: solid black 1px;
-    font-family: 'Robooto', sans-serif;
+    font-family: 'Yanone Kaffeesatz', sans-serif;
+    font-size: 24px;
     color:black;
 }
 
-
+.numer-pola:disabled {
+    cursor:default;
+}
 
 .button-sciaganie:hover {
     background-color: #3E000C;
@@ -241,6 +244,89 @@ a {
     text-decoration: none;
     color:black;
 }
+
+#lewy-bok input[type=submit] {
+    padding: 7px 5px 7px 5px;
+    background-color: #E8EDDF;
+    font-family: "Yanone Kaffeesatz", sans-serif;
+    font-size: 24px;
+    width:50%;
+    position:relative;
+    left:25%;
+    border: none;
+    margin-top:15px;
+}
+
+#lewy-bok input[type=submit] {
+    cursor:pointer;
+}
+
+#lewy-bok button {
+    padding: 7px 5px 7px 5px;
+    background-color: #E8EDDF;
+    font-family: "Yanone Kaffeesatz", sans-serif;
+    font-size: 24px;
+    width:50%;
+    border: none;
+    position:relative;
+    left:25%;
+}
+
+#lewy-bok button:hover {
+    cursor: pointer;
+}
+
+.boczne-komunikaty {
+    display:block;
+    width:100%;
+}
+
+#komunikaty {
+    margin-top:20px;
+}
+
+.boczne-komunikaty p {
+    text-align: center;
+    margin:12px 8px 12px 8px;
+}
+
+.boczne-komunikaty span {
+    font-family: "Yanone Kaffeesatz", sans-serif;
+    font-size: 150%;
+    font-weight: normal;
+}
+
+#aktywny-gracz {
+    font-weight: bolder;
+}
+
+#koniec-gry {
+    font-size:18px;
+}
+
+.formularz-start input[type=submit] {
+    padding: 7px 5px 7px 5px;
+    background-color: transparent;
+    color:black;
+    font-family: "Yanone Kaffeesatz", sans-serif;
+    font-size: 24px;
+    border: 1px #3E000C solid;
+    width:100%;
+    margin-top:20px;
+}
+
+.formularz-start input[type=submit]:hover {
+    cursor: pointer;
+    background-color: #3E000C;
+    color: #E8EDDF;
+}
+
+.formularz-start input[type=text] {
+    display:block;
+    width:100%;
+    padding:5px 2px 5px 2px;
+}
+
 
 footer {
     position:fixed;

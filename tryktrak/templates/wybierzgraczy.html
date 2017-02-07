@@ -5,15 +5,39 @@
 {% block content %}
     <h2>Wpisz imiona graczy:</h2>
     {% if typ_gry == 'gracze' %}
-        <form action = "/gra" method="get">
-            Pierwszy gracz: <input type = "text" name = "gracz1"><br>
-            Drugi gracz: <input type = "text" name = "gracz2"><br>
+        <form action = "/gra" method="get" class = "formularz-start" id="formularz-gracze">
+            Pierwszy gracz: <input type = "text" name = "gracz1" id="gracz1"><br>
+            Drugi gracz: <input type = "text" name = "gracz2" id="gracz2"><br>
             <input type = "submit" value = "Zapisz">
         </form>
     {% else %}
-        <form action = "/gra" method="get">
-            Gracz: <input type = "text" name = "gracz1"><br>
+        <form action = "/gra" method="get" class = "formularz-start" id="formularz-komputer">
+            Gracz: <input type = "text" name = "gracz1" id="gracz1"><br>
             <input type = "submit" value = "Zapisz">
         </form>
     {% endif %}
+{% endblock %}
+{% block script %}
+    <script>
+    $(document).ready(function () {
+        $('#formularz-gracze').submit(function() {
+            if ($('#gracz1').val() == '' || $('#gracz2').val() == '') {
+                alert('Podaj imiona obydwu graczy!');
+                return false;
+            }
+
+        })
+    })
+    </script>
+    <script>
+    $(document).ready(function () {
+        $('#formularz-komputer').submit(function() {
+            if ($('#gracz1').val() == '') {
+                alert('Podaj imię gracza!');
+                return false;
+            }
+
+        })
+    })
+    </script>
 {% endblock %}

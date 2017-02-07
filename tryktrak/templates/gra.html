@@ -2,16 +2,22 @@
 {% block title %}Gra{% endblock %}
 {%  block lewy %}
     {% if koniec %}
-        Koniec gry!
-        Wygrany: {{ wygrany }}
-        <a class = "nowa-gra" href="/index">Nowa gra!</a>
+        <div class = "boczne-komunikaty" id="koniec-gry">
+            <p>Koniec gry!</p>
+            <p>Wygrany: {{ wygrany }}</p>
+            <p>Punkty: {{ punkty }}</p>
+            <a href="/index"><button type="button">Nowa gra!</button></a>
+        </div>
     {% else %}
-        Typ gry: {{ typ_gry }}<br>
-        Aktywny gracz: {{ kolejka }}<br>
-
-        Rzuty kostką:<br>
-        <div id = "kostki">
-            Rzuty do wykorzystania:<br>
+        <div class = "boczne-komunikaty">
+            <p>Typ gry: {{ typ_gry }}</p>
+        </div>
+        <div class = "boczne-komunikaty" id="aktywny-gracz">
+            <p>Aktywny gracz: <span>{{ kolejka }}</span></p>
+        </div>
+        <div class = "boczne-komunikaty">
+            <p>Rzuty kostką:</p>
+            <div id = "kostki">
             {% set sciezki = ["../static/1.png", "../static/2.png", "../static/3.png", "../static/4.png", "../static/5.png", "../static/6.png"] %}
             {% for rzut in rzuty %}
                 {% if loop.index < 3 %}
@@ -19,25 +25,25 @@
                     <img src = "{{ sciezka }}">
                 {% endif %}
             {% endfor %}
+            </div>
         </div>
-        Pozostałe wartości ruchu:
-        {%  for x in ruchy %}
-            {{ x }}
-        {%  endfor %}<br>
-        Ruchy możliwe do wykonania:
-
-            {{ mozliwe_ruchy }}
-        {% if kolejka == 'Komputer' %}
-            Teraz komputer ma kolejkę!
-            <form method = "get" action="/ruch">
-                <input type = "submit" value = "Ok">
-            </form><br>
-        {% endif %}
-        {% if komunikaty %}
-            {{ komunikaty }}
-        {% endif %}
-        Ostatnie ruchy:
-            {{ ostanie_ruchy }}
+        <div class = "boczne-komunikaty" id = "komunikaty">
+            {% if komunikaty %}
+                <p><span>Komunikaty</span></p>
+                <p>{{ komunikaty }}</p>
+            {% endif %}
+        </div>
+            <div class = "boczne-komunikaty" id="kolejka-komputera" >
+            {% if kolejka == 'Komputer' %}
+                <p>Teraz komputer ma kolejkę!</p>
+                <button id="ruch-komputera">Ok!</button>
+            {% endif %}
+            {% if ostatnie_ruchy and kolejka != 'Komputer' %}
+                <form method = "get" action="/ruch">
+                    <input type = "submit" name = "cofanie" value = "Cofnij">
+                </form>
+            {% endif %}
+        </div>
     {% endif %}
 {% endblock %}
 {% block content %}
@@ -46,37 +52,40 @@
             {% set licznik = 0 %}
             {% set radio = 1 %}
             {% for pole, wartosc in stan_gry.items() %}
-                {% if licznik < 12 %}
-                        <div id = {{ pole }} class = "pole dolne_pole">
-                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = "{{ loop.index }}" disabled>
-                {% else %}
-                    <div id = {{ pole }} class = "pole gorne_pole">
-                    {% if loop.index < 25 %}
-                        <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = {{ loop.index }} disabled>
+                {% if pole != 'zbite' %}
+                    {% if licznik < 12 %}
+                            <div id = {{ pole }} class = "pole dolne_pole">
+                            <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = "{{ loop.index }}" disabled>
+                    {% else%}
+                        <div id = {{ pole }} class = "pole gorne_pole">
+                        {% if loop.index < 25 %}
+                            <input type = "submit" name = "dokad" value = "{{ loop.index }}" class="numer-pola" id = {{ loop.index }} disabled>
+                        {% endif %}
                     {% endif %}
+                    {% set licznik = licznik+1 %}
+                    {% for pionek in wartosc %}
+                        {% if pionek == 'bordo' %}
+                            {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
+                                <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                                <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
+                            {% else %}
+                                <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
+                                <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
+                            {% endif %}
+                        {% elif pionek == 'bialy' %}
+                            {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
+                                <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
+                                <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
+                            {% else %}
+                                <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
+                                <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
+                            {% endif %}
+                        {% endif %}
+
+                    {% endfor %}
+                    {% set radio = radio+1 %}
+                        </div>
                 {% endif %}
-                {% set licznik = licznik+1 %}
-                {% for pionek in wartosc %}
-                    {% if pionek == 'bordo' %}
-                        {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
-                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
-                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
-                        {% else %}
-                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
-                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bordo"></label>
-                        {% endif %}
-                    {% elif pionek == 'bialy' %}
-                        {% if radio in mozliwe_ruchy and kolejka != 'Komputer' %}
-                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox">
-                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
-                        {% else %}
-                            <input type="radio" name="skad" id = "{{ radio }}-{{ loop.index }}" value = "{{ radio }}" class = "css-checkbox" disabled>
-                            <label for="{{ radio }}-{{ loop.index }}" class="css-label radio-bialy"></label>
-                        {% endif %}
-                    {% endif %}
-                {% endfor %}
-                {% set radio = radio+1 %}
-                    </div>
             {% endfor %}
             <div id = "zbite" style="left:285px;">
                 {% for pionek in zbite %}
@@ -89,11 +98,9 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            {% if sciaganie == 1 %}
-                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie">Ściągnij pionek<br> z planszy</button>
-            {% else %}
-                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij pionek<br> z planszy</button>
-            {% endif %}
+
+                <button type = "submit" name = "dokad" value = "x" class = "button-sciaganie" disabled>Ściągnij!</button>
+
     </form>
     </div>
 {% endblock %}
@@ -120,6 +127,13 @@
                 }
             }
         });
+    });
+    </script>
+    <script>
+    $(document).ready(function () {
+       $('#ruch-komputera').click(function () {
+           location.reload();
+       });
     });
     </script>
 {% endblock %}

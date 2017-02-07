@@ -500,7 +500,8 @@ class Gra:
         powrot_skad = ostatni_ruch[1]
         powrot_dokad = ostatni_ruch[0]
         self.plansza[powrot_dokad].append(self.aktywny_kolor)
-        self.plansza[powrot_skad].pop()
+        if powrot_skad != 'pole_x':
+            self.plansza[powrot_skad].pop()
         for x in ostatni_ruch[2]:
             self.aktywne_rzuty.append(x)
         del self.ostatnie_ruchy[-1]
